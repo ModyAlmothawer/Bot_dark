@@ -1,0 +1,6 @@
+{
+  "name": "شاشتك فـ جيبك - Shashtak",
+  "description": "منصة عربية حديثة لمشاهدة القنوات الفضائية والبث المباشر Online بجودة عالية",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

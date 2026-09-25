@@ -1,0 +1,44 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // التحقق من تسجيل دخول المستخدم
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // التحقق من صلاحية الإدارة (Admin Authorization):
+    // يُعتبر المستخدم مسؤولاً (Admin) إذا:
+    // 1. يمتلك Custom Claim في التوكن (request.auth.token.admin == true)، أو
+    // 2. يوجد له مستند مسجل في مجموعة /admins/{userId} برقم UID الخاص به
+    // ملاحظة أمنية: مجموعة admins للقراءة فقط من قِبل صاحب الحساب، وممنوع الكتابة فيها نهائياً من العميل لمنع تصعيد الصلاحيات (Privilege Escalation)
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.admin == true ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    // مجموعة القنوات الفضائية (channels)
+    // 1. الزوار غير الموثقين والموثقين يستطيعون قراءة القنوات
+    // 2. المشرف المصرح له فقط (isAdmin) يستطيع الإضافة والتعديل والحذف
+    match /channels/{channelId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // مجموعة المشرفين (admins)
+    // يمكن للمستخدم قراءة مستند حسابه فقط للتحقق من صلاحيته
+    // ممنوع منعاً باتاً الكتابة أو الإنشاء من جانب العميل (تُدار فقط من Firebase Console)
+    match /admins/{userId} {
+      allow read: if isSignedIn() && request.auth.uid == userId;
+      allow write: if false;
+    }
+
+    // رفض الوصول الافتراضي لجميع المجموعات والمستندات الأخرى لحماية قاعدة البيانات
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "entities": {
+    "Channel": {
+      "title": "Channel",
+      "description": "قناة فضائية وبث مباشر في منصة شاشتك",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "اسم القناة"
+        },
+        "logo": {
+          "type": "string",
+          "description": "رابط شعار القناة"
+        },
+        "streamUrl": {
+          "type": "string",
+          "description": "رابط البث المباشر للقناة"
+        },
+        "streamType": {
+          "type": "string",
+          "enum": ["hls", "embed", "mp4"],
+          "description": "نوع البث"
+        },
+        "categoryId": {
+          "type": "string",
+          "description": "معرف تصنيف القناة"
+        },
+        "description": {
+          "type": "string",
+          "description": "نبذة وتفاصيل عن القناة"
+        },
+        "isActive": {
+          "type": "boolean",
+          "description": "هل القناة مفعلة للبث"
+        },
+        "isFeatured": {
+          "type": "boolean",
+          "description": "هل القناة مميزة في واجهة التطبيق"
+        },
+        "order": {
+          "type": "number",
+          "description": "ترتيب ظهور القناة"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "تاريخ الإنشاء"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "تاريخ التحديث الأخير"
+        }
+      },
+      "required": ["name", "streamUrl", "categoryId", "isActive", "createdAt"]
+    },
+    "AdminUser": {
+      "title": "AdminUser",
+      "description": "سجل المشرفين المصرح لهم بإدارة القنوات عبر رقم المستخدم UID",
+      "type": "object",
+      "properties": {
+        "role": {
+          "type": "string",
+          "description": "نوع الدور الإداري (admin / superadmin)"
+        },
+        "email": {
+          "type": "string",
+          "description": "البريد الإلكتروني للمسؤول"
+        },
+        "grantedAt": {
+          "type": "string",
+          "description": "تاريخ منح الصلاحية"
+        }
+      },
+      "required": ["role"]
+    }
+  },
+  "firestore": {
+    "/channels/{channelId}": {
+      "schema": "Channel",
+      "description": "مجموعة القنوات الفضائية والبث الحي"
+    },
+    "/admins/{userId}": {
+      "schema": "AdminUser",
+      "description": "مجموعة التحقق من صلاحيات المشرفين المصرح لهم (UID)"
+    }
+  }
+}
